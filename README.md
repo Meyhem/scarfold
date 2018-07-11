@@ -1,10 +1,10 @@
-# scarfold
+# Scarfold
 Node CLI Utility for scaffolding source files from custom templates
 
-# generation
+# Generation
 **scarfold** &lt;template&gt; --var1 value1 --var2 value2
 
-# example confgiuration
+# Example configuration
 This configuration defines following:
 * templateFolder - folder where users templates are stored (default: "templates")
 * graceful - to be implemented (if false, execution will follow fail-fast strategy)
@@ -25,12 +25,18 @@ Vars can also contain options **default**, if specified, the var will be conside
   "graceful": false,
   "scaffolding": {
     "textfile": {
-      "render": {
-        "textfile.txt": "test/src/##name##.txt",
-        "textfile2.txt": "test/src/##name##.txt"
-      },
+      "render": [
+        {
+          "template": "textfile.txt",
+          "dest": "test/src/##name##.txt"
+        },
+        {
+          "template": "textfile2.txt",
+          "dest": "test/src/##name##2.txt"
+        }
+      ],
       "vars": {
-        "name": {},
+        "name": { },
         "status": {
           "default": "simple"
         }
@@ -39,3 +45,8 @@ Vars can also contain options **default**, if specified, the var will be conside
   }
 }
 ```
+
+# Todos
+* case converter syntax (camel, pascal, snake ...)
+* ???
+* profit

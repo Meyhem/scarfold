@@ -11,10 +11,13 @@ export interface IConfig {
 }
 
 export interface ICommand {
-  render: {
-    [src: string]: string
-  }
+  render: IRenderItem[]
   vars: IVars
+}
+
+export interface IRenderItem {
+  template: string,
+  dest: string
 }
 
 export interface IVars {
@@ -37,8 +40,11 @@ const rootSchema: Schema = {
         additionalProperties: false,
         properties: {
           render: {
-            type: 'object',
-            additionalProperties: { type: 'string' }
+            type: 'array',
+            items: {
+              type: 'object',
+              additionalProperties: { type: 'string' }
+            }
           },
           vars: { 
             type: 'object',

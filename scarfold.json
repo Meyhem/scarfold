@@ -3,14 +3,18 @@
   "graceful": false,
   "scaffolding": {
     "textfile": {
-      "render": {
-        "textfile.txt": "test/src/##name##.txt",
-        "textfile2.txt": "test/src/##name##.txt"
-      },
-      "vars": {
-        "name": {
-          "required": true
+      "render": [
+        {
+          "template": "textfile.txt",
+          "dest": "test/src/##name##.txt"
         },
+        {
+          "template": "textfile2.txt",
+          "dest": "test/src/##name##2.txt"
+        }
+      ],
+      "vars": {
+        "name": { },
         "status": {
           "default": "simple"
         }
