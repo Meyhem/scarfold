@@ -1,0 +1,20 @@
+{
+  "templateFolder": "templates",
+  "graceful": false,
+  "scaffolding": {
+    "textfile": {
+      "render": {
+        "textfile.txt": "test/src/##name##.txt",
+        "textfile2.txt": "test/src/##name##.txt"
+      },
+      "vars": {
+        "name": {
+          "required": true
+        },
+        "status": {
+          "default": "simple"
+        }
+      }
+    }
+  }
+}
