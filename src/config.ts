@@ -1,12 +1,12 @@
 import fs from 'fs'
 
-import { Validator, Schema, ValidatorResult } from 'jsonschema'
+import { Schema, Validator, ValidatorResult } from 'jsonschema'
 
 export interface IConfig {
   templateFolder: string
   graceful: boolean
   scaffolding: {
-    [command: string]: ICommand
+    [command: string]: ICommand,
   }
 }
 
@@ -22,10 +22,10 @@ export interface IRenderItem {
 
 export interface IVars {
   [name: string]: {
-    default?: string | number | boolean | null
+    default?: string | number | boolean | null,
   }
 }
-
+// tslint:disable:object-literal-sort-keys
 const rootSchema: Schema = {
   id: '/root',
   type: 'object',
@@ -42,23 +42,23 @@ const rootSchema: Schema = {
             type: 'array',
             items: {
               type: 'object',
-              additionalProperties: { type: 'string' }
-            }
+              additionalProperties: { type: 'string' },
+            },
           },
-          vars: { 
+          vars: {
             type: 'object',
             additionalProperties: {
               type: 'object',
               additionalProperties: false,
               properties: {
-                default: { type: ['string', 'number', 'boolean', 'null']}
-              }
-            }
-          }
-        }
-      }
-    }
-  }
+                default: { type: ['string', 'number', 'boolean', 'null']},
+              },
+            },
+          },
+        },
+      },
+    },
+  },
 }
 
 export let config: IConfig;
@@ -68,14 +68,14 @@ export function loadConfig() {
   let cfg: any
 
   cfg = JSON.parse(contents)
-  
+
   // run schema validation
   const result = validateConfig(cfg)
   if (result.errors && result.errors.length) {
     let errStr = 'Invalid scarfold config file:\n'
 
     errStr = result.errors
-      .map(err => `${err.property} ${err.message}`)
+      .map((err) => `${err.property} ${err.message}`)
       .join('\n')
 
     throw new Error(errStr)
@@ -83,7 +83,7 @@ export function loadConfig() {
 
   config = cfg
 
-  Object.keys(config.scaffolding).map(cmd => {
+  Object.keys(config.scaffolding).map((cmd) => {
     if (cmd.toLowerCase() === 'init') {
       throw new Error('Template command with name \'init\' is forbidden, \'init\' is reserved keyword.')
     }
@@ -96,11 +96,10 @@ function validateConfig(cfg: any): ValidatorResult {
 }
 
 export const DEFAULT_CONFIG = {
-  "templateFolder": "templates",
-  "scaffolding": {
-    "component": {
-      "render": [
-      ]
-    }
-  }
+  templateFolder: 'templates',
+  scaffolding: {
+    component: {
+      render: [ ],
+    },
+  },
 }

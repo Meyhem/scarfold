@@ -1,71 +1,11 @@
-import path from 'path'
+import chalk from 'chalk'
 import fs from 'fs-extra'
 import handlebars from 'handlebars'
+import path from 'path'
 
-import { config, IVars, ICommand } from './config'
-import chalk from 'chalk';
-
+import { config, ICommand, IVars } from './config'
 
 export class ScarfEngine {
-  private assertExistTemplate(templatePath: string) {
-    if (!fs.existsSync(templatePath)) {
-      throw new Error(`Template file '${templatePath}' does not exists`)
-    }
-  }
-
-  private overrideProtect(path: string) {
-    if (fs.existsSync(path)) {
-      throw new Error(`Rendering destination '${path}' already exists, stopping.`)
-    }
-  }
-
-  private processVars(varDefs: IVars, vars: any) {
-    // loop through "vars" section in config
-    for (const varNameDef in varDefs) {
-      // does not have default, not provided in CLI parameter
-      if (typeof varDefs[varNameDef].default === 'undefined' &&
-        typeof vars[varNameDef] === 'undefined') {
-
-        throw new Error(`Var '${varNameDef}' does not have \
-default value and must be provided as CLI parameter '--${varNameDef} <value>'`)
-
-      }
-      // has default, not provided in CLI parameter
-      else if (typeof varDefs[varNameDef].default !== 'undefined' &&
-        typeof vars[varNameDef] === 'undefined') {
-        // use default value
-        vars[varNameDef] = varDefs[varNameDef].default
-      }
-    }
-  }
-
-  private assertUniqueDestPaths(cmd: ICommand) {
-    const dupes: string[] = []
-    const dests = cmd.render.map(rnd => rnd.dest)
-    dests.map((dest, i) => {
-      if (dests.lastIndexOf(dest) !== i) {
-        dupes.push(dest)
-      }
-    })
-    if (dupes.length) {
-      throw new Error(`Found duplicate 'dest' paths in 'render', \
-preventing accidental overrides during generation of: ${dupes.join(', ')}`)
-    }
-  }
-
-  private loadTemplate(templatePath: string): string {
-    return fs.readFileSync(templatePath, { encoding: 'utf-8' })
-  }
-
-  private renderTemplate(templateContents: string, vars: any): string {
-    return handlebars.compile(templateContents)(vars)
-  }
-
-  private writeTemplate(rendered: string, destPath: string) {
-    fs.mkdirpSync(path.dirname(destPath))
-    fs.writeFileSync(destPath, rendered)
-  }
-
   public gen(command: string, vars: any) {
     const templateCommand = config.scaffolding[command]
     const templateFolder = config.templateFolder || 'templates'
@@ -95,5 +35,64 @@ preventing accidental overrides during generation of: ${dupes.join(', ')}`)
       this.writeTemplate(rendered, destinationPath)
       console.log(chalk.green(`+ ${destinationPath}`))
     }
+  }
+
+  private assertExistTemplate(templatePath: string) {
+    if (!fs.existsSync(templatePath)) {
+      throw new Error(`Template file '${templatePath}' does not exists`)
+    }
+  }
+
+  private overrideProtect(protectedPath: string) {
+    if (fs.existsSync(protectedPath)) {
+      throw new Error(`Rendering destination '${protectedPath}' already exists, stopping.`)
+    }
+  }
+
+  private processVars(varDefs: IVars, vars: any) {
+    // loop through "vars" section in config
+    for (const varNameDef in varDefs) {
+      if (typeof varDefs[varNameDef].default === 'undefined' &&
+        typeof vars[varNameDef] === 'undefined') {
+      // does not have default, not provided in CLI parameter
+
+        throw new Error(`Var '${varNameDef}' does not have \
+default value and must be provided as CLI parameter '--${varNameDef} <value>'`)
+
+      } else if (typeof varDefs[varNameDef].default !== 'undefined' &&
+        // has default, not provided in CLI parameter
+
+        typeof vars[varNameDef] === 'undefined') {
+        // use default value
+        vars[varNameDef] = varDefs[varNameDef].default
+      }
+    }
+  }
+
+  private assertUniqueDestPaths(cmd: ICommand) {
+    const dupes: string[] = []
+    const dests = cmd.render.map((rnd) => rnd.dest)
+    dests.map((dest, i) => {
+      if (dests.lastIndexOf(dest) !== i) {
+        dupes.push(dest)
+      }
+    })
+    if (dupes.length) {
+      throw new Error(`Found duplicate 'dest' paths in 'render', \
+preventing accidental overrides during generation of: ${dupes.join(', ')}`)
+    }
+  }
+
+  private loadTemplate(templatePath: string): string {
+    return fs.readFileSync(templatePath, { encoding: 'utf-8' })
+  }
+
+  private renderTemplate(templateContents: string, vars: any): string {
+    return handlebars.compile(templateContents)(vars)
+  }
+
+  private writeTemplate(rendered: string, destPath: string) {
+    fs.mkdirpSync(path.dirname(destPath))
+    fs.writeFileSync(destPath, rendered)
   }
 }

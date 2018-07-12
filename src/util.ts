@@ -1,20 +1,9 @@
-import fs from 'fs-extra'
 import chalk from 'chalk'
+import fs from 'fs-extra'
 
 import { DEFAULT_CONFIG } from './config'
 
 export default {
-  lowercaseKeys(obj: any) {
-    let key, keys = Object.keys(obj);
-    let n = keys.length;
-    let newobj: any = {}
-    while (n--) {
-      key = keys[n];
-      newobj[key.toLowerCase()] = obj[key];
-    }
-    return newobj
-  },
-
   createEnvironment() {
     try {
       if (!fs.existsSync('scarfold.json')) {
@@ -37,6 +26,5 @@ export default {
     } catch (e) {
       console.error(chalk.red(`Unable to create 'templates' folder: ${e.message}`))
     }
-  }
-
+  },
 }

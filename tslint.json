@@ -5,17 +5,21 @@
     ],
     "jsRules": {},
     "rules": {
-        "quotemark":{
+        "quotemark": {
             "options": [
                 "single"
             ]
         },
+        "semicolon": false,
+        "no-console": false
     },
     "rulesDirectory": [],
     "linterOptions": {
         "exclude": [
-          "config/**/*.js",
-          "node_modules/**/*.ts"
+            "config/**/*.js",
+            "node_modules/**/*.ts",
+            "examples/**/*",
+            "lib/**/*"
         ]
-      }
+    }
 }

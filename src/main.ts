@@ -1,28 +1,28 @@
-import * as yargs from 'yargs'
 import chalk from 'chalk'
+import * as yargs from 'yargs'
 
 import { loadConfig } from './config'
 import { ScarfEngine } from './engine'
 import util from './util';
 
-function engine() {
+function runEngine() {
   try {
     loadConfig()
   } catch (e) {
     console.error(chalk.red(e.message))
     process.exit(1)
   }
-  
+
   const engine = new ScarfEngine()
   try {
-    let vars = {
-      ...cli
+    const vars = {
+      ...cli,
     }
     delete vars._
-    delete vars['$0']
+    delete vars.$0
 
     engine.gen(cli._[0], vars)
-    
+
   } catch (e) {
     console.error(chalk.red(e.message))
   }
@@ -36,10 +36,10 @@ const cli = yargs.usage('Usage: $0 <template> [options] [variables]')
   .argv
 
 switch (cli._[0]) {
-  case 'init': 
+  case 'init':
     util.createEnvironment()
     break
-  default: 
-    engine()
+  default:
+    runEngine()
     break
 }
