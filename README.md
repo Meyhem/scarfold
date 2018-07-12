@@ -2,6 +2,13 @@
 Node CLI Utility for scaffolding source files from custom 
 [Handlebars](http://handlebarsjs.com/ "Handlebars") templates
 
+# Installation
+$ npm install -g scarfold
+
+or
+
+$ yarn global add scarfold
+
 # Quickstart
 1. Create folder **templates** and place custom template files there.
 2. Create scarfold.json file (see examples) and put custom scaffolding commands in there.
