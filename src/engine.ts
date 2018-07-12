@@ -1,5 +1,6 @@
 import path from 'path'
 import fs from 'fs-extra'
+
 import { config, IVars, ICommand } from './config'
 
 function assertExistTemplate(templatePath: string) {
@@ -31,7 +32,6 @@ default value and must be provided as CLI parameter '--${varNameDef} <value>'`)
       vars[varNameDef] = varDefs[varNameDef].default
     }
   }
-
 }
 
 function assertUniqueDestPaths(cmd: ICommand) {
@@ -79,13 +79,13 @@ export class ScarfEngine {
 
     // check
     assertUniqueDestPaths(templateCommand)
+    processVars(templateCommand.vars, vars)
     for (const renderItem of renderItems) {
       const templatePath = path.join(templateFolder, renderItem.template)
       const destinationPath = renderTemplate(renderItem.dest, vars)
 
       assertExistTemplate(templatePath)
       overrideProtect(destinationPath)
-      processVars(templateCommand.vars, vars)
     }
 
     // execution
@@ -93,7 +93,7 @@ export class ScarfEngine {
       const templatePath = path.join(templateFolder, renderItem.template)
       const destinationPath = renderTemplate(renderItem.dest, vars)
       const rendered = renderTemplate(loadTemplate(templatePath), vars)
-      //writeTemplate(rendered, destinationPath)
+      writeTemplate(rendered, destinationPath)
     }
   }
 }

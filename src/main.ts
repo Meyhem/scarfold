@@ -3,6 +3,7 @@ import chalk from 'chalk'
 
 import { loadConfig } from './config'
 import { ScarfEngine } from './engine'
+import util from './util';
 
 try {
   loadConfig()
@@ -20,13 +21,13 @@ const cli = yargs.usage('Usage: $0 <template> [options] [variables]')
 
 const engine = new ScarfEngine()
 try {
-  const vars = {
+  let vars = {
     ...cli
   }
 
   delete vars._
   delete vars['$0']
-
+  vars = util.lowercaseKeys(vars)
   engine.gen(cli._[0], vars)
 } catch (e) {
   console.error(chalk.red(e.message))

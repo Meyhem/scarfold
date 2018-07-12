@@ -1,0 +1,18 @@
+import * as React from 'react'
+import { connect } from 'react-redux'
+
+class ##name## extends React.Component {
+  render() {
+    return <>
+      Template Component
+    </>
+  }
+}
+
+const mapStateToProps = (state) => {
+  return {
+
+  }
+}
+
+export const ##name##Container = connect(mapStateToProps)(##name##)

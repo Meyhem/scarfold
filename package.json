@@ -1,10 +1,16 @@
 {
   "name": "scarfold",
   "version": "0.0.1",
-  "description": "Nodejs utility for scaffonding custom templates",
+  "description": "Nodejs utility for scaffolding custom templates",
   "main": "lib/scarfold.js",
+  "preferGlobal": true,
   "scripts": {
+    "build": "tsc",
+    "dev": "tsc && tsc --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "scarfold": "./bin/scarfold.js"
   },
   "repository": {
     "type": "git",
@@ -30,6 +36,7 @@
   "devDependencies": {
     "@types/fs-extra": "^5.0.4",
     "@types/node": "^10.5.2",
-    "@types/yargs": "^11.1.0"
+    "@types/yargs": "^11.1.0",
+    "typescript": "^2.9.2"
   }
 }

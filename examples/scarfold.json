@@ -1,0 +1,17 @@
+{
+  "templateFolder": "templates",
+  "graceful": false,
+  "scaffolding": {
+    "component": {
+      "render": [
+        {
+          "template": "react.component.template",
+          "dest": "src/components/##name##.ts"
+        }
+      ],
+      "vars": {
+        "name": { }
+      }
+    }
+  }
+}

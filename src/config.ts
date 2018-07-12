@@ -1,5 +1,6 @@
 import fs from 'fs'
 
+import util from './util'
 import { Validator, Schema, ValidatorResult } from 'jsonschema'
 
 export interface IConfig {
@@ -69,6 +70,16 @@ export function loadConfig() {
   let cfg: any
 
   cfg = JSON.parse(contents)
+
+  // lowercase all vars
+  if (cfg && cfg.scaffolding) {
+    let cmds = Object.keys(cfg.scaffolding)
+    cmds.map(cmd => {
+      if(cfg.scaffolding[cmd].vars) {
+        cfg.scaffolding[cmd].vars = util.lowercaseKeys(cfg.scaffolding[cmd].vars)
+      }
+    })
+  }
 
   const result = validateConfig(cfg)
   if (result.errors && result.errors.length) {
