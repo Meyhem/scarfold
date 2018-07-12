@@ -1,16 +1,18 @@
 {
   "templateFolder": "templates",
-  "graceful": false,
   "scaffolding": {
     "component": {
       "render": [
         {
-          "template": "react.component.template",
+          "template": "react.component.hbs",
           "dest": "src/components/{{name}}.ts"
         }
       ],
       "vars": {
-        "name": { }
+        "name": { },
+        "withRedux": { 
+          "default": false
+        }
       }
     }
   }

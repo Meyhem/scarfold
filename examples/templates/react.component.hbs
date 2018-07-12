@@ -1,7 +1,9 @@
 import * as React from 'react'
+{{#if withRedux}}
 import { connect } from 'react-redux'
+{{/if}}
 
-class {{name}} extends React.Component {
+{{#unless withRedux}}export {{/unless}}class {{name}} extends React.Component {
   render() {
     return <>
       Template Component
@@ -9,6 +11,7 @@ class {{name}} extends React.Component {
   }
 }
 
+{{#if withRedux}}
 const mapStateToProps = (state) => {
   return {
 
@@ -16,3 +19,4 @@ const mapStateToProps = (state) => {
 }
 
 export const {{name}}Container = connect(mapStateToProps)({{name}})
+{{/if}}

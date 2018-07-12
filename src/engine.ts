@@ -3,6 +3,7 @@ import fs from 'fs-extra'
 import handlebars from 'handlebars'
 
 import { config, IVars, ICommand } from './config'
+import chalk from 'chalk';
 
 
 export class ScarfEngine {
@@ -30,7 +31,8 @@ default value and must be provided as CLI parameter '--${varNameDef} <value>'`)
 
       }
       // has default, not provided in CLI parameter
-      else if (typeof varDefs[varNameDef].default !== 'undefined') {
+      else if (typeof varDefs[varNameDef].default !== 'undefined' &&
+        typeof vars[varNameDef] === 'undefined') {
         // use default value
         vars[varNameDef] = varDefs[varNameDef].default
       }
@@ -64,7 +66,6 @@ preventing accidental overrides during generation of: ${dupes.join(', ')}`)
     fs.writeFileSync(destPath, rendered)
   }
 
-
   public gen(command: string, vars: any) {
     const templateCommand = config.scaffolding[command]
     const templateFolder = config.templateFolder || 'templates'
@@ -92,6 +93,7 @@ preventing accidental overrides during generation of: ${dupes.join(', ')}`)
       const destinationPath = this.renderTemplate(renderItem.dest, vars)
       const rendered = this.renderTemplate(this.loadTemplate(templatePath), vars)
       this.writeTemplate(rendered, destinationPath)
+      console.log(chalk.green(`+ ${destinationPath}`))
     }
   }
 }
