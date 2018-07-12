@@ -1,2 +1,0 @@
-tectfile2.txt
-##name##
