@@ -93,6 +93,12 @@ export function loadConfig() {
   }
 
   config = cfg
+
+  Object.keys(config.scaffolding).map(cmd => {
+    if (cmd.toLowerCase() === 'init') {
+      throw new Error('Template command with name \'init\' is forbidden, \'init\' is reserved keyword.')
+    }
+  })
 }
 
 function validateConfig(cfg: any): ValidatorResult {
