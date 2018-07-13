@@ -5,33 +5,71 @@ import path from 'path'
 
 import { config, ICommand, IVars } from './config'
 
+interface IScarfEngineOptions {
+  override: boolean
+}
+
 export class ScarfEngine {
+  private options: IScarfEngineOptions
+
+  constructor(options?: IScarfEngineOptions) {
+    // merge with default options
+    this.options = {
+      override: false,
+      ...options,
+    }
+  }
+
+  /**
+   * @param command string command, which engine will look up in scarfold.json file, loads it and executes it
+   * @param vars dict that contains user defined variables for template
+   * @throws Error object whether there is validation error
+   */
   public gen(command: string, vars: any) {
+    // get command from config
     const templateCommand = config.scaffolding[command]
+
+    // determine template folder, defaults to 'templates'
     const templateFolder = config.templateFolder || 'templates'
 
     if (!templateCommand) {
       throw new Error(`Scaffolding command '${command}' does not exist in scarfold file`)
     }
 
+    // inidividual rendering items (mapping from which template to what destination)
     const renderItems = templateCommand.render
 
-    // check
+    // checks
+    // check whether there is a render destination colliding with another
+    // that way they will override each other (latter wins)
     this.assertUniqueDestPaths(templateCommand)
+
+    // validate and expand default vars
     this.processVars(templateCommand.vars, vars)
     for (const renderItem of renderItems) {
       const templatePath = path.join(templateFolder, renderItem.template)
+
+      // render destination path
       const destinationPath = this.renderTemplate(renderItem.dest, vars)
 
+      // check whether template file exists
       this.assertExistTemplate(templatePath)
-      this.overrideProtect(destinationPath)
+
+      if (!this.options.override) {
+        // check whether destination file already exists (check disabled by --override option)
+        this.overrideProtect(destinationPath)
+      }
     }
 
     // execution
     for (const renderItem of renderItems) {
       const templatePath = path.join(templateFolder, renderItem.template)
       const destinationPath = this.renderTemplate(renderItem.dest, vars)
+
+      // load and render template
       const rendered = this.renderTemplate(this.loadTemplate(templatePath), vars)
+
+      // write to file
       this.writeTemplate(rendered, destinationPath)
       console.log(chalk.green(`+ ${destinationPath}`))
     }
@@ -50,28 +88,34 @@ export class ScarfEngine {
   }
 
   private processVars(varDefs: IVars, vars: any) {
+    const errors: string[] = []
     // loop through "vars" section in config
     for (const varNameDef in varDefs) {
       if (typeof varDefs[varNameDef].default === 'undefined' &&
         typeof vars[varNameDef] === 'undefined') {
-      // does not have default, not provided in CLI parameter
 
-        throw new Error(`Var '${varNameDef}' does not have \
+        // does not have default value, not provided in CLI parameter
+        errors.push(`Var '${varNameDef}' does not have \
 default value and must be provided as CLI parameter '--${varNameDef} <value>'`)
 
       } else if (typeof varDefs[varNameDef].default !== 'undefined' &&
-        // has default, not provided in CLI parameter
+        // has default value, not provided in CLI parameter
 
         typeof vars[varNameDef] === 'undefined') {
         // use default value
         vars[varNameDef] = varDefs[varNameDef].default
       }
     }
+    if (errors.length) {
+      // report all required missing vars
+      throw new Error(errors.join('\n'))
+    }
   }
 
   private assertUniqueDestPaths(cmd: ICommand) {
     const dupes: string[] = []
     const dests = cmd.render.map((rnd) => rnd.dest)
+
     dests.map((dest, i) => {
       if (dests.lastIndexOf(dest) !== i) {
         dupes.push(dest)
@@ -92,6 +136,7 @@ preventing accidental overrides during generation of: ${dupes.join(', ')}`)
   }
 
   private writeTemplate(rendered: string, destPath: string) {
+    // create folder structure recursively is it does not exist
     fs.mkdirpSync(path.dirname(destPath))
     fs.writeFileSync(destPath, rendered)
   }
