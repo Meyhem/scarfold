@@ -1,6 +1,24 @@
 {
   "templateFolder": "templates",
   "scaffolding": {
+    "simple": {
+      "render": [
+        {
+          "template": "simple.hbs",
+          "dest": "src/simples/simple-{{name}}-1.txt"
+        },
+        {
+          "template": "simple.hbs",
+          "dest": "src/simples/simple-{{name}}-2.txt"
+        }
+      ],
+      "vars": {
+        "sentence1": { },
+        "sentence2": { },
+        "name": { "default": "file" }
+      }
+    },
+
     "component": {
       "render": [
         {

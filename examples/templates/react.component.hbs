@@ -3,7 +3,7 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 {{/if}}
 
-{{#unless withRedux}}export {{/unless}}class {{name}} extends React.Component {
+{{#unless withRedux}}export {{/unless}}class {{camelCase name}} extends React.Component {
   render() {
     return <>
       Template Component

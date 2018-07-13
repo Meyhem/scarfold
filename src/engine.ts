@@ -4,6 +4,7 @@ import path from 'path'
 
 import { ICommand, IConfig, IVars } from './config'
 import { IFsUtil } from './fsUtil'
+import { camelCase } from './hbsExtensions'
 
 interface IScarfEngineOptions {
   override: boolean
@@ -22,6 +23,9 @@ export class ScarfEngine {
       override: false,
       ...options,
     }
+
+    // register helper functions
+    handlebars.registerHelper('camelCase', camelCase)
   }
 
   /**
