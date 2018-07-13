@@ -1,8 +1,9 @@
 import chalk from 'chalk'
 import * as yargs from 'yargs'
 
-import { loadConfig } from './config'
+import { config, loadConfig } from './config'
 import { ScarfEngine } from './engine'
+import { FsUtil } from './fsUtil'
 import util from './util';
 
 /**
@@ -13,10 +14,13 @@ function runEngine() {
     // load scarfold.json
     loadConfig()
 
+    const fsUtil = new FsUtil()
     // initialize engine
-    const engine = new ScarfEngine({
-      override: cli.override,
-    })
+    const engine = new ScarfEngine(fsUtil,
+      config,
+      {
+        override: cli.override,
+      })
 
     // dupe cli arguments from yargs
     const vars = {

@@ -4,7 +4,6 @@ import { Schema, Validator, ValidatorResult } from 'jsonschema'
 
 export interface IConfig {
   templateFolder: string
-  graceful: boolean
   scaffolding: {
     [command: string]: ICommand,
   }

@@ -1,9 +1,9 @@
 import chalk from 'chalk'
-import fs from 'fs-extra'
 import handlebars from 'handlebars'
 import path from 'path'
 
-import { config, ICommand, IVars } from './config'
+import { ICommand, IConfig, IVars } from './config'
+import { IFsUtil } from './fsUtil'
 
 interface IScarfEngineOptions {
   override: boolean
@@ -11,8 +11,12 @@ interface IScarfEngineOptions {
 
 export class ScarfEngine {
   private options: IScarfEngineOptions
+  private fsUtil: IFsUtil
+  private config: IConfig
 
-  constructor(options?: IScarfEngineOptions) {
+  constructor(fsUtil: IFsUtil, config: IConfig, options?: IScarfEngineOptions) {
+    this.fsUtil = fsUtil
+    this.config = config
     // merge with default options
     this.options = {
       override: false,
@@ -27,10 +31,10 @@ export class ScarfEngine {
    */
   public gen(command: string, vars: any) {
     // get command from config
-    const templateCommand = config.scaffolding[command]
+    const templateCommand = this.config.scaffolding[command]
 
     // determine template folder, defaults to 'templates'
-    const templateFolder = config.templateFolder || 'templates'
+    const templateFolder = this.config.templateFolder || 'templates'
 
     if (!templateCommand) {
       throw new Error(`Scaffolding command '${command}' does not exist in scarfold file`)
@@ -76,13 +80,13 @@ export class ScarfEngine {
   }
 
   private assertExistTemplate(templatePath: string) {
-    if (!fs.existsSync(templatePath)) {
+    if (!this.fsUtil.exists(templatePath)) {
       throw new Error(`Template file '${templatePath}' does not exists`)
     }
   }
 
   private overrideProtect(protectedPath: string) {
-    if (fs.existsSync(protectedPath)) {
+    if (this.fsUtil.exists(protectedPath)) {
       throw new Error(`Rendering destination '${protectedPath}' already exists, stopping.`)
     }
   }
@@ -128,7 +132,7 @@ preventing accidental overrides during generation of: ${dupes.join(', ')}`)
   }
 
   private loadTemplate(templatePath: string): string {
-    return fs.readFileSync(templatePath, { encoding: 'utf-8' })
+    return this.fsUtil.loadFile(templatePath)
   }
 
   private renderTemplate(templateContents: string, vars: any): string {
@@ -136,8 +140,6 @@ preventing accidental overrides during generation of: ${dupes.join(', ')}`)
   }
 
   private writeTemplate(rendered: string, destPath: string) {
-    // create folder structure recursively is it does not exist
-    fs.mkdirpSync(path.dirname(destPath))
-    fs.writeFileSync(destPath, rendered)
+    this.fsUtil.gFileWrite(rendered, destPath)
   }
 }
