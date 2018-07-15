@@ -19,6 +19,18 @@
       }
     },
 
+    "casing": {
+      "render": [
+        {
+          "template": "express.router.hbs",
+          "dest": "src/express/routers/{{router}}.js"
+        }
+      ],
+      "vars": {
+        "router": {}
+      }
+    },
+    
     "component": {
       "render": [
         {

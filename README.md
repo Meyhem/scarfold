@@ -39,6 +39,15 @@ The templates use standard Handlebars.js syntax which can be found [here](https:
 {{#unless variable }}...{{/unless}} // negated condition
 ```
 
+Also scarfold provides Handlebars helpers for working with different case conventions. This allows usage of one variable for multiple purposes (e.g. class name, file name, variable name ...)
+These are:
+* camelCase (variableIdentifierInCamelCase)
+* pascalCase (VariableIdentifierInPascalCase)
+* noCase (as is, just remove dashes from provided var)
+
+These helpers requires variable to be provided **in-snake-case**.
+Specifiyng parameter '--someVar some-variable-name' and using helper
+{{camelCase someVar}} will render value **someVariableName**.
 
 # Description
 Each scaffolding command has "render" and "vars" properties.
@@ -90,8 +99,9 @@ Dev compilation watcher - **yarn dev**
 Run tests - **yarn test**
 
 # Todos
-* case converter syntax (camel, pascal, snake ...)
 * CI
-* var type coercion
+* var type coercion (typed parameter)
+* support arrays
+* support complex types ?
 * ???
 * profit

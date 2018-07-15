@@ -3,7 +3,7 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 {{/if}}
 
-{{#unless withRedux}}export {{/unless}}class {{camelCase name}} extends React.Component {
+{{#unless withRedux}}export {{/unless}}class {{pascalCase name}} extends React.Component {
   render() {
     return <>
       Template Component
@@ -18,5 +18,5 @@ const mapStateToProps = (state) => {
   }
 }
 
-export const {{name}}Container = connect(mapStateToProps)({{name}})
+export const {{pascalCase name}}Container = connect(mapStateToProps)({{pascalCase name}})
 {{/if}}
