@@ -7,7 +7,8 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc && tsc --watch",
-    "test": "yarn mocha -r ts-node/register test/**/*.test.ts"
+    "test": "yarn mocha -r ts-node/register test/**/*.test.ts",
+    "prepublish": "tslint --project . && tsc && yarn test"
   },
   "bin": {
     "scarfold": "./bin/scarfold.js"
