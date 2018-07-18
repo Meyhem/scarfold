@@ -20,7 +20,11 @@
   "keywords": [
     "cli",
     "scaffolding",
-    "templates"
+    "templates",
+    "templating",
+    "boilerplate",
+    "generation",
+    "handlebars"
   ],
   "author": "Meyhem",
   "license": "MIT",

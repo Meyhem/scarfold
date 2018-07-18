@@ -1,4 +1,5 @@
 import { expect } from 'chai'
+import sinon from 'sinon'
 
 import { IConfig } from '../src/config'
 import { ScarfEngine } from '../src/engine'
@@ -94,11 +95,39 @@ describe('scarfengine', () => {
     }).to.throw('dest.txt')
   })
 
+  it('doesn\'t write files if one or more templates are invalid', () => {
+    const cfg = stubConfig()
+
+    cfg.scaffolding.testcmd.render.push({template: 'templ.hbs', dest: '{{name}}.txt'})
+    cfg.scaffolding.testcmd.render.push({template: 'templ.hbs', dest: '{{name}}1.txt'}) // bad template syntax
+
+    const depFs = {
+      exists: (path: string) => {
+        return path.indexOf('templ.hbs') !== -1 // fake template existence but nothing else
+      },
+
+      gFileWrite: sinon.stub(),
+      loadFile: () => {
+        return '{{#if }}-Bacon Ipsum'
+      },
+    } as IFsUtil
+
+    const eng = new ScarfEngine(depFs, cfg, { override: false })
+
+    expect(() => {
+      eng.gen('testcmd', {name: 'MAGIC-STRING'})
+    }).to.throw('Parse error on line 1')
+
+    expect((depFs.gFileWrite as sinon.SinonStub).called).to.be.false
+  })
+
   it('renders template correctly', () => {
     const cfg = stubConfig()
     let renderred: {contents: string, path: string}
 
     cfg.scaffolding.testcmd.render.push({template: 'templ.hbs', dest: '{{name}}.txt'})
+
+    const writeToFs = sinon.stub()
 
     const depFs = {
       exists: (path: string) => {
@@ -106,6 +135,7 @@ describe('scarfengine', () => {
       },
       gFileWrite: (contents: string, path: string) => {
         renderred = { contents, path } // for later consumption
+        writeToFs()
       },
       loadFile: () => {
         return '{{name}}-Bacon Ipsum'
@@ -118,5 +148,6 @@ describe('scarfengine', () => {
     }).not.to.throw()
     expect(renderred!.contents).to.equal('MAGIC-STRING-Bacon Ipsum')
     expect(renderred!.path).to.contain('MAGIC-STRING.txt')
+    expect(writeToFs.called).to.be.true
   })
 })

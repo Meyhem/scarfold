@@ -61,7 +61,7 @@ export class ScarfEngine {
       const templatePath = path.join(templateFolder, renderItem.template)
 
       // render destination path
-      const destinationPath = this.renderTemplate(renderItem.dest, vars)
+      const destinationPath = this.renderTemplate(renderItem.dest, renderItem.dest, vars)
 
       // check whether template file exists
       this.assertExistTemplate(templatePath)
@@ -72,14 +72,23 @@ export class ScarfEngine {
       }
     }
 
+    const writeTasks = []
     // execution
     for (const renderItem of renderItems) {
       const templatePath = path.join(templateFolder, renderItem.template)
-      const destinationPath = this.renderTemplate(renderItem.dest, vars)
+      const destinationPath = this.renderTemplate(renderItem.dest, renderItem.dest, vars)
 
       // load and render template
-      const rendered = this.renderTemplate(this.loadTemplate(templatePath), vars)
+      const rendered = this.renderTemplate(templatePath, this.loadTemplate(templatePath), vars)
 
+      // we dont immediately write the file we first want to verify if templates have no errors
+      // so we dont end up wih partially rendered renderItems
+      writeTasks.push({
+        destinationPath,
+        rendered,
+      })
+    }
+    for (const { rendered, destinationPath } of writeTasks) {
       // write to file
       this.writeTemplate(rendered, destinationPath)
       console.log(chalk.green(`+ ${destinationPath}`))
@@ -142,8 +151,12 @@ preventing accidental overrides during generation of: ${dupes.join(', ')}`)
     return this.fsUtil.loadFile(templatePath)
   }
 
-  private renderTemplate(templateContents: string, vars: any): string {
-    return handlebars.compile(templateContents)(vars)
+  private renderTemplate(source: string, templateContents: string, vars: any): string {
+    try {
+      return handlebars.compile(templateContents)(vars)
+    } catch (e) {
+      throw new Error(`Template error (${source}): ${e.message}`)
+    }
   }
 
   private writeTemplate(rendered: string, destPath: string) {
