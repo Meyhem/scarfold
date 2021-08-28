@@ -1,4 +1,7 @@
 # Scarfold
+
+DEPRECATED IN FAVOR OF MORE ADVANCED TOOL [SNEED](https://github.com/Meyhem/sneed)
+
 Node CLI Utility for scaffolding source files from custom 
 [Handlebars](http://handlebarsjs.com/ "Handlebars") templates
 
